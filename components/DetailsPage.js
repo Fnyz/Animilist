@@ -8,8 +8,10 @@ import { AntDesign } from '@expo/vector-icons';
 export class DetailsPage extends Component {
   state = {
     singleAnime: {},
+    episodesDetails:false,
   }
-  handleEpisode =(epData, animeTitle, subOrDub) => {
+  handleEpisode =(epData, animeTitle, subOrDub,) => {
+  
     this.props.navigation.navigate('Episodes',{
       epData,
       title:animeTitle,

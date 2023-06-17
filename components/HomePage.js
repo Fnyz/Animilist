@@ -10,6 +10,7 @@ import RecentRelease from './RecentRelease'
 import Popular from './Popular'
 import TopMovies from './TopMovies'
 import { MaterialIcons } from '@expo/vector-icons';
+import { FAB, Portal, PaperProvider } from 'react-native-paper';
 
 
 
@@ -20,7 +21,13 @@ export class HomePage extends Component {
 
   state = {
     popularAnime: [],
+    open:false,
+    jusclick:false,
   }
+
+  onStateChange = ({ open }) => {
+    this.setState({open})
+  };
 
   getPopular = async () => {
     try {
@@ -61,6 +68,7 @@ export class HomePage extends Component {
     } 
     return (
       <>
+        <PaperProvider>
       <SafeAreaView style={{
         flex:1,
       }}>
@@ -167,17 +175,40 @@ export class HomePage extends Component {
         })}
         </Swiper>
         </View>
-        <TopAnime />
-        <Popular />
-        <TopMovies/>
+        <TopAnime navigation = {this.props.navigation}/>
+        <Popular navigation = {this.props.navigation}/>
+        <TopMovies navigation = {this.props.navigation}/>
         </ScrollView>
 
         </View>
         </View> 
 
+
+        <Portal>
+        <FAB.Group
+          open={this.state.open}
+          visible
+          fabStyle={{ backgroundColor: 'coral' }}
+          color='white'
+          backdropColor='rgba(0, 0, 0, 0.5)'
+          icon= {this.state.jusclick? 'close' : 'dots-horizontal'} 
+          actions={[
+            { icon: 'search-web', color:'coral', backdropColor:'white', onPress: () => this.props.navigation.navigate('Search')},
+          ]}
+         
+          onStateChange={this.onStateChange}
+          onPress={() => {
+            this.setState({jusclick:!this.state.jusclick})
+            
+          }}
+         
+        />
+      </Portal>
+
     
     
       </SafeAreaView>
+      </PaperProvider>
   </>
     )
   }

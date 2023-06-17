@@ -1,8 +1,8 @@
-import { Text, View, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet} from 'react-native'
+import { Text, View, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Dimensions, StatusBar} from 'react-native'
 import React, {useEffect, useState } from 'react'
 import axios from 'axios'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Video, ResizeMode, Fullscreen  } from 'expo-av';
+import { Video, ResizeMode  } from 'expo-av';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -10,6 +10,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 import { EvilIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+
+
+
 
 
 
@@ -31,7 +34,26 @@ const [url, setUrl] = useState(null);
 const [choose, setChoose] = useState(null);
 const [isLoading, setIsLoading] = useState(true);
 const [isVideoPaused, setIsVideoPaused] = useState(false); 
-const [isFullscreen, setIsFullscreen] = useState(false);
+const [isMuted, setIsMuted] = useState(false);
+  const [currentVolume, setCurrentVolume] = useState(1);
+
+  const handleVolumeUp = () => {
+    const newVolume = Math.min(currentVolume + 10, 100); // Increase volume by 0.1 (maximum value is 1)
+    setCurrentVolume(newVolume);
+    video.current.setVolumeAsync(newVolume /100); // Set the updated volume value
+    setIsMuted(false); // Unmute the video if it was muted
+  };
+
+  const handleVolumeDown = () => {
+    const newVolume = Math.max(currentVolume - 10, 0); // Decrease volume by 0.1 (minimum value is 0)
+    setCurrentVolume(newVolume);
+    video.current.setVolumeAsync(newVolume / 100); // Set the updated volume value
+    setIsMuted(false); // Unmute the video if it was muted
+  };
+
+
+
+
 
 
 useEffect(() => {
@@ -48,14 +70,6 @@ const checkVideoStatus = async () => {
 };
 
 
-const handleFullscreenToggle = async () => {
-  if (isFullscreen) {
-    await Fullscreen?.exitFullscreenAsync();
-  } else {
-    await Fullscreen?.requestFullscreenAsync(video.current);
-  }
-  setIsFullscreen(!isFullscreen);
-};
 
 
 
@@ -162,13 +176,6 @@ const  vidQuality = (quality) => {
     const qualy = EpisodeData?.filter(item => item.quality.match(/\d+/g));
     const listEpisode = alldata?.filter(item => item.number !== number);
 
-
-   
-  
-
-    
-
-    
     if(!EpisodeData.length) {
       return (
         <SafeAreaView>
@@ -176,6 +183,8 @@ const  vidQuality = (quality) => {
         </SafeAreaView>
       )
     }
+
+
     
    
   
@@ -187,7 +196,9 @@ const  vidQuality = (quality) => {
         alignItems:'center',
         backgroundColor:'rgba(0, 0, 0, .8)'
       }}>
-
+        <ScrollView>
+          
+      
         <View style={{
           flexDirection:'row',
           justifyContent:'center',
@@ -257,6 +268,9 @@ const  vidQuality = (quality) => {
           position:'relative',
         }}>
 
+
+
+
       {isLoading ? (
         <ActivityIndicator size="large" color="coral" style={{
           position:'absolute',
@@ -272,10 +286,10 @@ const  vidQuality = (quality) => {
             <Video
             ref={video}
             rate={1.0}
-            volume={1.0}
+        
             isMuted={false}
             shouldPlay={!isVideoPaused}
-            style={isFullscreen ? styles.videoFullscreen : styles.video}
+            style={styles.video}
              source={{
                uri: url
              }}
@@ -287,23 +301,23 @@ const  vidQuality = (quality) => {
              onPress={handleVideoPress}
            />  
 
-
-      <TouchableOpacity onPress={handleFullscreenToggle} style={styles.fullscreenButton}>
-        <Ionicons name={isFullscreen ? 'md-contract' : 'md-expand'} size={24} color="white" />
-      </TouchableOpacity>
-
-          
-
         </View>
 
-      )}
+        
 
+      )}
+  
+      
+  
       <View style={{
         flexDirection:'row',
         justifyContent:'center',
         alignItems:'center',
-        marginVertical:10,
-        marginHorizontal:10,
+       marginTop:15,
+       marginBottom:10,
+        marginHorizontal:15,
+        gap:15,
+
       }}>
 
         
@@ -313,8 +327,7 @@ const  vidQuality = (quality) => {
        padding:15,
        justifyContent:'center',
        alignItems:'center',
-       margin:10,
-       borderRadius:10,
+       borderBottomLeftRadius:15,
        backgroundColor:'coral',
        width:100,
        opacity:0.8
@@ -336,8 +349,7 @@ const  vidQuality = (quality) => {
        padding:15,
        justifyContent:'center',
        alignItems:'center',
-       margin:10,
-       borderRadius:10,
+   
        backgroundColor:'coral',
        width:100,
        opacity:0.8
@@ -358,8 +370,7 @@ const  vidQuality = (quality) => {
        padding:15,
        justifyContent:'center',
        alignItems:'center',
-       margin:10,
-       borderRadius:10,
+       borderBottomRightRadius:15,
        backgroundColor:'coral',
        width:100,
        opacity:0.8
@@ -373,9 +384,49 @@ const  vidQuality = (quality) => {
     </TouchableOpacity>
 
       </View>
-      
 
-    
+      
+      <View style={{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        gap:20,
+        marginBottom:15,
+   
+      }}>
+        <TouchableOpacity onPress={handleVolumeDown} style={{
+      
+        padding:5,
+        borderBottomLeftRadius:10,
+        width:50,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'coral',
+        opacity:0.8
+        }}>
+        <AntDesign name="minus" size={22} color="white" />
+        </TouchableOpacity>
+        <Text style={{
+          color:'coral',
+           fontSize:35,
+           opacity:0.8
+        }}>{currentVolume}%</Text>
+       
+        <TouchableOpacity onPress={handleVolumeUp} style={{
+      
+      padding:5,
+      borderRadius:3,
+      width:50,
+      justifyContent:'center',
+      alignItems:'center',
+      backgroundColor:'coral',
+      borderBottomRightRadius:10,
+      opacity:0.8
+      }}>
+        <AntDesign name="plus" size={22} color="white" />
+        </TouchableOpacity>
+       
+      </View>
 
 
      <Text style={{
@@ -533,7 +584,7 @@ const  vidQuality = (quality) => {
     
     </View>
 
-    
+    </ScrollView>
       </SafeAreaView>
       </PaperProvider>
   )
@@ -550,16 +601,8 @@ const styles = StyleSheet.create({
     height: 210,
     
   },
-  videoFullscreen: {
-    width: '100%',
-    height: '100%',
-  },
-  fullscreenButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
+  
+ 
 });
 
 export default ViewPage;

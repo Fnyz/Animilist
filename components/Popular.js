@@ -1,4 +1,4 @@
-import { Text, View , Image, ScrollView, Dimensions} from 'react-native'
+import { Text, View , ScrollView, TouchableOpacity} from 'react-native'
 import React, { Component } from 'react'
 import axios from 'axios'
 import GoTopAnimeInfo from './GoTopAnimeInfo'
@@ -27,6 +27,13 @@ export class Popular extends Component {
       throw new Error(err.message);
   }
   }
+
+  GotoDetails = ( id, navigation ) => {
+    navigation.navigate('AnimeDetail', {
+      animeId:id
+    })
+  }
+  
   
 
   componentDidMount(){
@@ -63,9 +70,12 @@ export class Popular extends Component {
          </View>
         ) : this.state?.animeMovie.map((itm, index) => {
           return (
-            <View key={index}>
+            <TouchableOpacity key={index} onPress={()=>this.GotoDetails(itm.animeId, this.props.navigation)}>
+            <View>
               <GoTopAnimeInfo {...itm}/>
             </View>
+
+            </TouchableOpacity>
           )
         })}
         </ScrollView>

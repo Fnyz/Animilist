@@ -36,6 +36,15 @@ export class GenresDetails extends Component {
     this.getAllDetailsGenre();
 
   }
+  handleDetails = (image, id) => {
+    this.setState({
+      selected: image
+     })
+     this.props.navigation.navigate('AnimeDetail', {
+      animeId:id,
+   
+    })
+  }
 
   
 
@@ -140,9 +149,7 @@ export class GenresDetails extends Component {
           }}>
           <FlatList data={this.state.data}
           renderItem={({item}) => (
-           <TouchableOpacity onPress={()=> this.setState({
-            selected: item.animeImg
-           })} style={{
+           <TouchableOpacity onPress={()=> this.handleDetails(item.animeImg, item.animeId)} style={{
  
             margin:5,
             width:width,

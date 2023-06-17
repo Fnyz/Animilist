@@ -6,6 +6,7 @@ import HomePage from './components/HomePage';
 import DetailsPage from './components/DetailsPage';
 import Episode from './components/Episode';
 import ViewPage from './components/ViewPage';
+import SearchAnime from './components/SearchAnime';
 
 
 const Stack = createNativeStackNavigator();
@@ -22,6 +23,7 @@ function App() {
         <Stack.Screen name="AnimeDetail" component={DetailsPage} />
         <Stack.Screen name="Episodes" component={Episode} />
         <Stack.Screen name="View" component={ViewPage} />
+        <Stack.Screen name="Search" component={SearchAnime} />
       </Stack.Navigator>
     </NavigationContainer>
 

@@ -62,8 +62,18 @@ export class Episode extends Component {
 
         <ScrollView>
 
-       
-        {episodes?.map((ep, i)=>{
+        {!episodes.length ? (
+            <View style={{
+                justifyContent:'center',
+                alignItems:'center',
+                flex:1,
+            }}>
+                <Text style={{
+                    color:'white'
+                }}>Episode not released yet.</Text>
+            </View>
+        ): 
+        episodes?.map((ep, i)=>{
             return (
                 <TouchableOpacity key={i}  onPress={()=> this.handleViewEpisodes(ep.id, i, title, ep.number, episodes, subOrDub)}>
 
@@ -95,7 +105,11 @@ export class Episode extends Component {
             </View>
         </TouchableOpacity>
             )
-        })}
+        })
+        }
+
+       
+  
         </ScrollView>
       </SafeAreaView>
     )

@@ -1,4 +1,4 @@
-import { Text, View , Image, ScrollView, Dimensions} from 'react-native'
+import { Text, View , ScrollView, TouchableOpacity} from 'react-native'
 import React, { Component } from 'react'
 import axios from 'axios'
 import TopAnimeInfo from './topAnimeInfo'
@@ -18,6 +18,11 @@ export class TopAnime extends Component {
   } catch (err) {
       throw new Error(err.message);
   }
+  }
+  GotoDetails = ( id, navigation ) => {
+    navigation.navigate('AnimeDetail', {
+      animeId:id
+    })
   }
   
 
@@ -43,9 +48,11 @@ export class TopAnime extends Component {
         <ScrollView horizontal>
         {this.state?.animeMovie.map((itm, index) => {
           return (
-            <View key={index}>
+            <TouchableOpacity key={index} onPress={()=>this.GotoDetails(itm.id, this.props.navigation)}>
+            <View>
               <TopAnimeInfo {...itm}/>
             </View>
+            </TouchableOpacity>
           )
         })}
         </ScrollView>
