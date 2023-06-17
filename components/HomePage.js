@@ -1,14 +1,20 @@
-import { Dimensions, View, Image, ImageBackground, ScrollView} from 'react-native'
+import { View, ScrollView, TouchableOpacity} from 'react-native'
 import React, { Component } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Swiper from 'react-native-swiper'
 import axios from 'axios'
-import { Avatar, Button, Card, Text} from 'react-native-paper';
-const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
-import { Entypo } from '@expo/vector-icons';
-import { Searchbar } from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import Genres from './Genres'
+import TopAnime from './TopAnime'
+import RecentRelease from './RecentRelease'
+import Popular from './Popular'
+import TopMovies from './TopMovies'
+import { MaterialIcons } from '@expo/vector-icons';
 
+
+
+
+const url = "https://consumet-api-funk.onrender.com/anime/gogoanime/recent-episodes";
 
 export class HomePage extends Component {
 
@@ -16,22 +22,15 @@ export class HomePage extends Component {
     popularAnime: [],
   }
 
-  getPopular = async () => {  
+  getPopular = async () => {
     try {
-
-      const popular = await axios.get('https://webdis-jthh.onrender.com/popular',{
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        }
-      })
-      this.setState({ popularAnime:popular.data});
-      
-    } catch (error) {
-      console.log(error)
-    }
+      const { data } = await axios.get(url, { params: { page: 1, type: 1 } });
+      this.setState({ popularAnime: data.results });
+  } catch (err) {
+      throw new Error(err.message);
   }
+  }
+
   
 
   componentDidMount(){
@@ -44,96 +43,104 @@ export class HomePage extends Component {
 
   render() {
 
+    
+
     if(!this.state.popularAnime.length) {
       return (
-        <SafeAreaView>
-          <Text>Fetching data please wait!</Text>
+        <SafeAreaView style={{
+          justifyContent:'center',
+          alignItems:'center',
+          backgroundColor:'rgba(0, 0, 0,.8)',
+          flex:1,
+        }}>
+          <Text style={{
+            color:'white'
+          }}>Welcome to Animist.</Text>
         </SafeAreaView>
       )
     } 
     return (
+      <>
       <SafeAreaView style={{
         flex:1,
       }}>
-
+        
+   
           <View style={{
-             flex:1,
-             backgroundColor: 'rgba(0, 0, 0, .8)',
+            flex:1,
+            backgroundColor: 'rgba(0, 0, 0, .8)',
           }}>
 
+     
+
+        <View style={{
+          flexDirection:'row',
+          justifyContent:'center',
+          alignItems:'center',
+          marginVertical:30,
+          gap:5,
+        }}>
+        <MaterialIcons name="live-tv" size={40} color="coral" style={{
+          opacity:0.8
+        }}/>
          <Text style={{
            fontSize:35,
-            textAlign:'center',
-            marginVertical:20,
-            paddingTop:15,
-            fontWeight:'bold',
-            color:'white',
-            opacity:0.8,
-          }}>Animist</Text>
-           <View>
-        <Searchbar
-        elevation={1}
-      placeholder="Search"
-      placeholderTextColor='white'
-      style={{
-        marginHorizontal:15,
-        marginVertical:15,
-        backgroundColor:'#4b4b4b',
-        opacity:0.8
-      }}
-      iconColor='white'
-    />
-     <Button icon="eye" mode="contained" style={{
-      marginHorizontal:17,
-      marginBottom:10,
-      backgroundColor:'#e15f41',
-      opacity:0.7,
-      height:50,
-      textAlign:'center',
-      paddingTop:5,
-     }} onPress={() => this.props.navigation.navigate('Genres')}>
-    Choose by Genres
-  </Button>
+           fontWeight:'bold',
+           color:'white',
+           opacity:0.8,
+          
+          }}>
+            Ani<Text style={{
+              color:'coral',
+              textAlign:'center',
+              fontWeight:'bold',
+            }}>mist</Text>
+          </Text>
+
         </View>
-        <ScrollView style={{
-          flex:1,
+
+
+          <Genres navigation={this.props.navigation}/>
+
+        
+
+          <View style={{
+            flex:1,
+          }}>
+          <ScrollView style={{
+            height:100,
+          }}>
+        <View style={{
+          height:330,
         }}>
         <Text style={{
-          position:'absolute',
-          zIndex:1,
-          top:20,
-          padding:10,
-          backgroundColor:'#e15f41',
           color:'white',
-          borderTopRightRadius:10,
-          borderBottomRightRadius:10,
-          opacity:0.9,
-        }}>Popular anime</Text>
-        <View style={{
-          height:460,
-        }}>
+          fontSize:15,
+          opacity:0.5,
+          marginBottom:10,
+          marginLeft:10,
+        }}>Recent Episode</Text>
 
         <Swiper
           autoplay
           dot={
             <View
-              style={{
-                backgroundColor: 'white',
-                width: 5,
-                height: 5,
-                borderRadius: 4,
-                marginLeft: 3,
-                marginRight: 4,
-                marginTop: 3,
-                marginBottom: 3,
-                opacity:0,
+            style={{
+              backgroundColor: 'white',
+              width: 5,
+              height: 5,
+              borderRadius: 4,
+              marginLeft: 3,
+              marginRight: 4,
+              marginTop: 3,
+              marginBottom: 3,
               }}
               />
           }
           activeDot={
             <View
-              style={{
-                backgroundColor: 'white',
+            style={{
+              backgroundColor: 'coral',
                 width: 8,
                 height: 8,
                 borderRadius: 4,
@@ -141,73 +148,37 @@ export class HomePage extends Component {
                 marginRight: 3,
                 marginTop: 3,
                 marginBottom: 3,
-                opacity:0,
               }}
               />
             }
-          paginationStyle={{
-            bottom:40,
-            left: null,
-            right: 70,
+            paginationStyle={{
+              bottom:350,
+              left: null,
+              right: 70,
           }}
           loop
         >
         {this.state?.popularAnime.map((anime, i) => {
           return (
-            <Card key={i} style={{
-              padding:10,
-              margin:10,
-              backgroundColor:'#4b4b4b',
-              opacity:0.8,
-            }}>
-            <Card.Content>
-              <View style={{
-                flexDirection:'row',
-              }}>
-              </View>
-            </Card.Content>
-           
-            <Card.Cover source={{ uri: anime.animeImg}} style={{
-              width:'100%',
-              height:undefined,
-              aspectRatio:1,
-            }}/>     
-            <Card.Actions>
-              <View style={{
-                justifyContent:'center',
-                alignItems:'center',
-                flexDirection:'row',
-                gap:5, 
-           
-              }}>
-              <Text style={{
-                fontSize:anime.animeTitle.length > 15 ? 12 : 15,
-                fontWeight:'bold',
-                opacity:0.7,
-                color:'white'
-              }}>{anime.animeTitle || anime.animeId}</Text>
-              <Text style={{
-                color:'coral',
-                fontSize:25,
-                fontWeight:'bold',
-              }}>/</Text>
-              <Entypo name="eye" size={24} color="black" style={{
-                opacity:0.7,
-                color:'white',
-              }} />
-              </View>
-            </Card.Actions>
-          </Card>
+            <View key={i}>
+              <RecentRelease {...anime} navigation = {this.props.navigation}/>
+            </View>
           )
         })}
         </Swiper>
-       
         </View>
-     
+        <TopAnime />
+        <Popular />
+        <TopMovies/>
         </ScrollView>
+
         </View>
+        </View> 
+
+    
     
       </SafeAreaView>
+  </>
     )
   }
 }
