@@ -1,12 +1,16 @@
-import { Text, View, Image } from 'react-native'
+import { Text, View } from 'react-native'
 import React, { Component } from 'react'
 import axios from 'axios';
+import { Image } from 'expo-image';
+import ListLoading from './listLoading';
+import { MotiView } from 'moti';
 
 
 export class TopAnimeInfo extends Component {
 
     state = {
-        animeData: {}
+        animeData: {},
+        error:null,
     }
 
     
@@ -22,36 +26,57 @@ export class TopAnimeInfo extends Component {
                 subOrdub: data.subOrDub,
                 tEpisodes: data.totalEpisodes,
             }
+
+
+            
             this.setState({
                 animeData: newData
             })
         } catch (err) {
-            throw new Error(err.message);
+            this.setState({ error: err});
         }
     };
   
   componentDidMount(){
-
     this.data();
-
   }
   
   render() {
 
     const  {title, image, subOrdub, tEpisodes} = this.state.animeData;
+    const {index} = this.props;
 
-    if (!this.state.animeData) {
-
-        <View>
-            <Text>Please wait fetching top animes.</Text>
-        </View>
-
+   
+    if(!image){
+        return (
+            <View style={{
+                width:210,
+                height:250,
+                justifyContent:'center',
+                alignItems:'center',
+            }}>
+                <ListLoading />
+            </View>
+        )
     }
 
     
     
     return (
-      <View>
+      <MotiView  
+      from={{
+        translateY:100,
+        opacity:0,
+      }}
+      animate={{
+        translateY:0,
+        opacity:1,
+      }}
+      transition={{
+        type:'spring',
+        delay:index * 100,
+      }}
+      >
         
         <View style={{
            width: 200, height: 200, margin:10,
@@ -95,7 +120,7 @@ export class TopAnimeInfo extends Component {
                 color:'white',
                 fontWeight:'bold',
                 textAlign:'center'
-            }}>EP 1/{tEpisodes}</Text>
+            }}>EP 1 / {tEpisodes}</Text>
             </View>
             <View style={{
                backgroundColor:'white',
@@ -113,13 +138,18 @@ export class TopAnimeInfo extends Component {
        
            
         </View>
-        <Image source={{ uri: image }} style={{ width: 200, height: 200, resizeMode:'cover',borderRadius:5, }} />
+        <Image
+        style={{ width: 200, height: 200, resizeMode:'cover',borderRadius:5, }}
+        source= {{ uri: image }}
+        contentFit="cover"
+        transition={1000}
+      />
         </View>
         <View style={{width:150, flexDirection:'row', alignSelf:'center'}}> 
           <Text style={{flex: 1, flexWrap: 'wrap', color:'white', textAlign:'center',fontWeight:'bold', opacity:0.7}}> {title}
           </Text>
         </View>
-      </View>
+      </MotiView>
     )
   }
 }

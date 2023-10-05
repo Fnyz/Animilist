@@ -1,10 +1,12 @@
-import { Text, View, Image, TouchableOpacity} from 'react-native'
+import { Text, View,  TouchableOpacity} from 'react-native'
 import React, { Component } from 'react'
+import { Image } from 'expo-image';
 export class RecentRelease extends Component {
 
   
   render() {
     const {image, title, id, episodeId, episodeNumber} = this.props;
+
   
    
     return (
@@ -15,12 +17,15 @@ export class RecentRelease extends Component {
         height:250,
         borderColor:'red'
        }}>
-        
-        <Image source={{uri:image}} style={{
-          width:400,
-          height:'100%',
-          resizeMode:'cover'
-        }}/>
+      
+
+        <Image
+        style={{ width:400,
+          height:'100%'}}
+        source= {{ uri: image }}
+        contentFit="cover"
+        transition={1000}
+      />
        </View>
        <View style={{
         width:'100%',
@@ -44,13 +49,18 @@ export class RecentRelease extends Component {
        
         <Text style={{
           color:'white'
-        }}>/  Episode <Text style={{
+        }}><Text style={{
+          color:'coral',
+          fontWeight:'bold',
+        }}>/</Text>  Episode <Text style={{
           fontWeight:'bold'
         }}>{episodeNumber}</Text></Text>
         <TouchableOpacity onPress={()=>this.props.navigation.navigate('View',{
           titlePage: title,
           epNumber: episodeNumber,
           episodeId,
+          titleId:id,
+          status:'Ongoing',
           type:'release'
         })}>
 
@@ -66,7 +76,7 @@ export class RecentRelease extends Component {
          
           <Text style={{
             color:'white',
-            
+            fontWeight:'bold'
           }}>Watch now</Text>
           </View>
         </TouchableOpacity>

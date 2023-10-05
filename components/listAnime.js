@@ -1,8 +1,9 @@
-import { Dimensions, View, Image } from 'react-native'
+import { Dimensions, View, Image, ActivityIndicator } from 'react-native'
 import React, { Component } from 'react'
 import { Text } from 'react-native-paper';
 
 import axios from 'axios';
+import ListLoading from './listLoading';
 const width = (Dimensions.get('window').width - 4 * 10) / 2;
 
 export class ListAnime extends Component {
@@ -49,6 +50,20 @@ this.data();
 
     const  {title, image, tEpisodes, subOrDub} = this.state.animeData;
 
+
+    if(!image){
+        return (
+            <View style={{
+                width:'100%',
+                height:140,
+                justifyContent:'center',
+                alignItems:'center',
+            }}>
+                <ListLoading />
+            </View>
+        )
+    }
+
   
 
     return (
@@ -87,7 +102,7 @@ this.data();
             }}>
             <View style={{
                 backgroundColor:'coral',
-                width:60,
+                width:!tEpisodes?.length ? 70 : 60,
                 padding:3,
                 borderBottomLeftRadius:5,
                 borderTopRightRadius:5,
@@ -97,7 +112,7 @@ this.data();
                 color:'white',
                 fontWeight:'bold',
                 textAlign:'center'
-            }}>EP 1/{tEpisodes?.length + 1}</Text>
+            }}>{!tEpisodes?.length? 'Upcoming' : `EP 1 / ${tEpisodes?.length}`}</Text>
             </View>
 
             {subOrDub && (
@@ -119,7 +134,13 @@ this.data();
        
            
         </View>
-        <Image source={{ uri: image }} style={{ width: 175, height: 175,borderRadius:5}} />
+        
+        <Image
+        style={{ width: 175, height: 175,borderRadius:5}}
+        source= {{ uri: image }}
+        contentFit="cover"
+        transition={1000}
+      />
         </View>
         <View style={{width:150, flexDirection:'row', alignSelf:'center', marginVertical:15,}}> 
           <Text style={{flex: 1, flexWrap: 'wrap', color:'white', textAlign:'center',fontWeight:'bold', opacity:0.7}}> {title}

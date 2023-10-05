@@ -1,6 +1,9 @@
-import { Text, View, Image } from 'react-native'
+import { Text, View } from 'react-native'
 import React, { Component } from 'react'
 import axios from 'axios';
+import { Image } from 'expo-image';
+import ListLoading from './listLoading';
+import { MotiView } from 'moti';
 
 
 export class GoTopAnimeInfo extends Component {
@@ -12,7 +15,7 @@ export class GoTopAnimeInfo extends Component {
     data = async () => {
         try {
 
-            const url = `https://webdis-jthh.onrender.com/anime-details/${this.props.animeId}`;
+            const url = `https://consumet-api-funk.onrender.com/anime/gogoanime/info/${this.props.animeId}`;
             const { data } = await axios.get(url, {
                 headers:{
                     'Content-Type': 'application/json',
@@ -20,17 +23,17 @@ export class GoTopAnimeInfo extends Component {
                 }
             });
             let newData = {
-                id: data.animeId,
-                title: data.animeTitle,
-                image: data.animeImg,
-                tEpisodes: data.episodesList,
+                id: data.id,
+                title: data.title,
+                image: data.image,
+                tEpisodes: data.episodes,
                 subOrDub: data?.subOrDub,
             }
             this.setState({
                 animeData: newData
             })
         } catch (err) {
-            throw new Error(err.message);
+            console.log('theres was an error', err);
         }
     };
   
@@ -43,19 +46,38 @@ export class GoTopAnimeInfo extends Component {
   render() {
 
     const  {title, image, tEpisodes, subOrDub} = this.state.animeData;
+    const {index} = this.props;
 
-    if (!this.state.animeData) {
-
-        <View>
-            <Text>Please wait fetching top animes.</Text>
-        </View>
-
+    if(!image){
+        return (
+            <View style={{
+                width:210,
+                height:250,
+                justifyContent:'center',
+                alignItems:'center',
+            }}>
+                <ListLoading />
+            </View>
+        )
     }
 
     
     
     return (
-      <View>
+      <MotiView
+      from={{
+        translateY:100,
+        opacity:0,
+      }}
+      animate={{
+        translateY:0,
+        opacity:1,
+      }}
+      transition={{
+        type:'spring',
+        delay:index * 100,
+      }}
+      >
         
         <View style={{
            width: 200, height: 200, margin:10,
@@ -89,7 +111,7 @@ export class GoTopAnimeInfo extends Component {
             }}>
             <View style={{
                 backgroundColor:'coral',
-                width:60,
+                width:!tEpisodes?.length ? 70 : 60,
                 padding:3,
                 borderBottomLeftRadius:5,
                 borderTopRightRadius:5,
@@ -99,7 +121,7 @@ export class GoTopAnimeInfo extends Component {
                 color:'white',
                 fontWeight:'bold',
                 textAlign:'center'
-            }}>EP 1/{tEpisodes?.length + 1}</Text>
+            }}>{!tEpisodes?.length? 'Upcoming' : `EP 1 / ${tEpisodes?.length}`}</Text>
             </View>
             {subOrDub && (
 
@@ -113,20 +135,25 @@ export class GoTopAnimeInfo extends Component {
                 <Text style={{
                     textTransform:'capitalize',
                     fontWeight:'bold'
-                }}>Null</Text>
+                }}>{subOrDub}</Text>
             </View>
             )}
             </View>
        
            
         </View>
-        <Image source={{ uri: image }} style={{ width: 200, height: 200, resizeMode:'cover',borderRadius:5, }} />
+        <Image
+        style={{ width: 200, height: 200, resizeMode:'cover',borderRadius:5, }}
+        source= {{ uri: image }}
+        contentFit="cover"
+        transition={1000}
+      />
         </View>
         <View style={{width:150, flexDirection:'row', alignSelf:'center'}}> 
           <Text style={{flex: 1, flexWrap: 'wrap', color:'white', textAlign:'center',fontWeight:'bold', opacity:0.7}}> {title}
           </Text>
         </View>
-      </View>
+      </MotiView>
     )
   }
 }

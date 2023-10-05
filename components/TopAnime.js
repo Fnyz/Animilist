@@ -1,62 +1,98 @@
-import { Text, View , ScrollView, TouchableOpacity} from 'react-native'
+import { Text, View , ScrollView, TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, { Component } from 'react'
-import axios from 'axios'
 import TopAnimeInfo from './topAnimeInfo'
+import { Ionicons } from '@expo/vector-icons';
+import { MotiView } from 'moti'
 
 export class TopAnime extends Component {
 
-    
-  state = {
-    animeMovie: [],
-  }
 
-  getMovie = async () => {  
-    try {
-      const url = "https://consumet-api-funk.onrender.com/anime/gogoanime/top-airing";
-      const { data } = await axios.get(url, { params: { page: 1 } });
-      this.setState({ animeMovie: data.results });
-  } catch (err) {
-      throw new Error(err.message);
-  }
-  }
   GotoDetails = ( id, navigation ) => {
     navigation.navigate('AnimeDetail', {
       animeId:id
     })
   }
+
+  seeAll = () => {
+    this.props.navigation.navigate('Movies',{
+      type:'List of Top Animes',
+      url:'https://consumet-api-funk.onrender.com/anime/gogoanime/top-airing',
+      kindData:true,
+    })
+  }
   
 
-  componentDidMount(){
-
-    this.getMovie();
-
-  }
   render() {
 
-    
+    const {topAnime} = this.props;
+
+
     return (
        <View style={{
         height:290,
        }}>
+        <View style={{
+          flexDirection:'row',
+          justifyContent:'space-between',
+          marginHorizontal:15,
+        }}>
         <Text style={{
           color:'white',
           opacity:0.5,
           fontSize:15,
           marginTop:10,
-          marginLeft:10,
+         
         }}>Top animes</Text>
+        <TouchableOpacity onPress={this.seeAll}>
+        <Text style={{
+          color:'white',
+          opacity:0.5,
+          fontSize:15,
+          marginTop:10,
+        }}>
+          See all
+        </Text>
+        </TouchableOpacity>
+        </View>
+        {this.props.error === 1 ? (
+        
+            <View style={{
+              height:270,
+              justifyContent:'center',
+              alignItems:'center',
+              gap:20,
+            }}>
+              <Text style={{
+                color:'white',
+              }}>Something went wrong sensie, please reload here.</Text>
+              <TouchableOpacity onPress={()=> this.props.fetchEndpoint2()} style={{
+                padding:10,
+                borderRadius:5,
+              }}>
+                {this.props.isclick ? (
+                    <ActivityIndicator size="large" color="coral" />
+                ):(
+                  <Ionicons name="reload" size={30} color="coral" />
+                )}
+              </TouchableOpacity>
+            </View>
+         
+        ):(
         <ScrollView horizontal>
-        {this.state?.animeMovie.map((itm, index) => {
+        {topAnime.map((itm, index) => {
           return (
             <TouchableOpacity key={index} onPress={()=>this.GotoDetails(itm.id, this.props.navigation)}>
-            <View>
-              <TopAnimeInfo {...itm}/>
-            </View>
+            <MotiView
+            >
+              <TopAnimeInfo {...itm} index={index}/>
+            </MotiView>
             </TouchableOpacity>
           )
         })}
         </ScrollView>
-            
+        )}
+  
+          
        </View>
             
     )
